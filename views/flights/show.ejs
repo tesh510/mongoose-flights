@@ -1,35 +1,87 @@
-%- include('../partials/header') %>
+<%- include('../partials/header') %>
 
-<h3>Flight List</h3>
+<section id="show-page">
+    <div>Airline: </div>
+    <div><%= flight.airline %></div>
+    <div>Flight No: </div>
+    <div><%= flight.flightNo %></div>
+    <div>Departure Date: </div>
+    <% if (flight.departs < Date.now()) { %>
+        <div style="color:red"><%= flight.departs %></div>
+        <% } else { %>
+        <div><%= flight.departs %></div>
+    <% } %>
+</section>
+
+
+<br><br><h2>Destinations</h2>
+<form method="POST"
+  action="/flights/<%= flight._id %>/destinations"> 
+  <label>Airport:
+    <select id="airport-destination" name="airport">
+        <option value="AUS">AUS</option>
+        <option value="DFW">DFW</option>
+        <option value="DEN">DEN</option>
+        <option value="LAX">LAX</option>
+        <option value="SAN">SAN</option>
+    </select>
+  </label><br>
+  <label>Arrival:</label>
+  <input type="datetime-local" name="arrival">
+  </label><br>
+  <input type="submit" value="Add Destination">
+</form>
+
+
+<% if (flight.destinations.length) { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Airport</th>
+          <th>Arrival</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% flight.destinations.sort(function(a, b) { %>
+            <% return a.arrival - b.arrival %>
+          <% }) %>
+        <% flight.destinations.forEach(function(d) { %>
+          <tr>
+            <td><%= d.airport %></td>
+            <td><%= d.arrival %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <h5>No Destinations</h5>
+  <% } %>
+
+  <br><br><h2>Tickets:</h2>
+  <% if (tickets.length) { %>
   <table>
     <thead>
       <tr>
-        <th>Airline</th>
-        <th>Airport</th>
-        <th>Flight #</th>
-        <th>Departs</th>
+        <th>Seat</th>
+        <th>Price</th>
       </tr>
     </thead>
     <tbody>
-      <!-- Write the line of EJS to iterate over flights using forEach -->
-      <!-- Sort the flights by ascending order -->
-      <% flights.sort(function(a, b) { %>
-        <% return a.departs - b.departs %>
-      <% }) %>
-      <% flights.forEach(function(f) { %>
+      <% tickets.forEach(function(t) { %>
         <tr>
-          <td><%= f.airline %></td>
-          <td><%= f.airport %></td>
-          <td><%= f.flightNo %></td>
-          <% if (f.departs < Date.now()) { %>
-          <td style="color:red"><%= f.departs.toLocaleString() %></td>
-          <% } else { %>
-          <td><%= f.departs.toLocaleString() %></td>
-          <% } %>
-          <td><a href="/flights/<%= f._id %>">DETAILS</a></td>
+          <td><%= t.seat %></td>
+          <td><%= t.price %></td>
         </tr>
-      <% }) %>
+      <% }); %>
     </tbody>
   </table>
+<% } else { %>
+  <h5>No Tickets</h5>
+<% } %>
+
+<a class="button" id="btnn" href="/flights/<%= flight._id %>/tickets/new">New Ticket</a>
+  
+
+
 
 <%- include('../partials/footer') %>
